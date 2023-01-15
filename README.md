@@ -4,4 +4,4 @@
 [참고 레포지토리](https://github.com/wayou/t-rex-runner)
 
 
-### [모의 게임](#)
+### [모의 게임](https://kys1651.github.io/opps/)
