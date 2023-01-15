@@ -11,11 +11,10 @@
      * @constructor
      * @export
      */
-    function sing(){
-        console.log();
-    }
     var flag = false;
-    var score = 0;
+    var booster = false;
+    var Attackcount = 1;
+    var beforeSpeed = 0;
     // 공룡 달리기 객체
     function Runner(outerContainerId, opt_config) {
         // Singleton
@@ -590,7 +589,7 @@
                     this.tRex.updateJump(deltaTime);
                     // 점프하는 함수 사용
                 }
-                if(this.tRex.attacking){// 수정중
+                if(this.tRex.attacking){
                     this.tRex.updateattack(deltaTime);
                 }
 
@@ -627,6 +626,20 @@
                     }
                     if (this.currentSpeed < this.config.MAX_SPEED) {
                         this.currentSpeed += this.config.ACCELERATION;
+                    }
+                    // 부스터 기능 구현
+                    if(booster){
+                        if(beforeSpeed == 0){
+                            beforeSpeed = this.currentSpeed;
+                            this.currentSpeed += 7;
+                        } 
+                        Attackcount -= 1;
+                        if(Attackcount < 10){
+                            booster = false;
+                            Attackcount = 1;
+                            this.currentSpeed = beforeSpeed;
+                            beforeSpeed = 0;
+                        }
                     }
                 } else {
                     this.gameOver();
@@ -757,7 +770,7 @@
                 }
 
                 if(!this.crashed && (Runner.keycodes.ATTACK[e.keyCode])&&this.playing){
-                    if(!this.tRex.attacking && !this.tRex.ducking && !this.tRex.jumping){
+                    if(!this.tRex.attacking && !this.tRex.ducking && !this.tRex.jumping && !booster){
                         this.tRex.startattack(this.currentSpeed);
                     }
                 }
@@ -915,6 +928,7 @@
                 this.playSound(this.soundFx.BUTTON_PRESS);
                 this.invert(true);
                 this.update();
+                Attackcount = 1;
             }
         },
         
@@ -1216,7 +1230,7 @@
     function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         // 변수는 장애물, 공룡, canvas 옵션
         var obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
-        
+        if(booster) return false;
         // Adjustments are made to the bounding box as there is a 1 pixel white
         // border around the t-rex and obstacles.
         var tRexBox = new CollisionBox( // 공룡 범위
@@ -1236,15 +1250,21 @@
             drawCollisionBoxes(opt_canvasCtx, tRexBox, obstacleBox);
             // drawCollisionBoxes 역할은 다시 알아봐야함
         }
-        // 익룡을 공격하면 점수가 올라간다.
-        // 수정
+        // 장애물 공격시 익룡: 점수 50점 획득
+        // 선인장: 5개 섭취시 속도가 빨라짐
         if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
+            // 익룡 먹
             if(obstacle.typeConfig.type == 'PTERODACTYL'){
-                obstacle.remove = true;
                 if(!flag){
                     flag = true;
                 }
-            }     
+            }else{ 
+                Attackcount += 100;
+                if(Attackcount > 500){
+                    booster = true;
+                }
+        }
+            obstacle.remove = true; 
             return false;
         }
         // Simple outer bounds check.
@@ -1726,6 +1746,7 @@
         this.ducking = false;
         this.attacking = false;
         this.jumpVelocity = 100;
+        
         this.attackVelocity = 5;
         this.reachedMinHeight = false;
         this.reachedMindistance =false;
@@ -1846,7 +1867,7 @@
                 Runner.config.BOTTOM_PAD;
             // 현재 위치를 아까 구한 땅의 위치롷
             this.yPos = this.groundYPos;
-            score = 0;
+
             // 최소한의 점프 높이를 구하여 넣어줌
             this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
             this.minattackdistance = this.xPos + this.config.MIN_ATTACK_DISTANCE;
@@ -3035,7 +3056,7 @@ function onDocumentLoad() {
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
 
 /*
-1. 남은 해야 할 일 장애물로 여우 생성하기.
-2. 장애물 여우를 공격 기능으로 먹으면 뼈를 쏠 수 있음
-3. 그 뼈로 장애물을 부실 수 있다.
+1. 선인장 5번 먹으면 부스터 기능
+2. 익룡은 먹으면 50점 추가점수
+3. 왼쪽위에 몇개 먹었는지 알려주는 기능 추가 예정
 */
