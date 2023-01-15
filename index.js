@@ -1587,7 +1587,6 @@
             }
         };
 
-
     /**
      * Obstacle definitions.
      * minGap: minimum pixel space betweeen obstacles.
@@ -1669,11 +1668,28 @@
             numFrames: 2,
             frameRate: 1000 / 6,
             speedOffset: .8
+        },
+        {   //익룡
+            type: 'PTERODACTYL',
+            width: 46,
+            height: 40,
+            yPos: [100], // Variable height. // 위치는 계속 변경 됨
+            yPosMobile: [100, 50], // Variable height mobile. // 핸드폰의 Y축
+            multipleSpeed: 999,
+            minSpeed: 8.5,
+            minGap: 150,
+            collisionBoxes: [
+                new CollisionBox(15, 15, 16, 5),
+                new CollisionBox(18, 21, 24, 6),
+                new CollisionBox(2, 14, 4, 3),
+                new CollisionBox(6, 10, 4, 7),
+                new CollisionBox(10, 8, 6, 9)
+            ],
+            numFrames: 2,
+            frameRate: 1000 / 6,
+            speedOffset: .8
         }
-        // {}
     ];
-
-
     //******************************************************************************
     /**
      * T-rex game character.
