@@ -63,7 +63,6 @@
         this.inverted = false;
         this.invertTimer = 0;
         this.resizeTimerId_ = null;
-
         //플레이 횟수
         this.playCount = 0;
 
@@ -85,7 +84,6 @@
         }
     }
     window['Runner'] = Runner;
-
 
     /**
      * Default game width. 기본 게임 폭
@@ -173,7 +171,6 @@
         SNACKBAR_SHOW: 'snackbar-show',
         TOUCH_CONTROLLER: 'controller'
     };
-
 
     /**
      * Sprite definition layout of the spritesheet.
@@ -263,7 +260,7 @@
             // return loadTimeData && loadTimeData.valueExists('disabledEasterEgg');
             return false;
         },
-
+        
         /**
          * For disabled instances, set up a snackbar with the disabled message.
          */
@@ -617,7 +614,7 @@
                 // 충돌시 어떻게 해야하는지에 대해서
                 var collision = hasObstacles && 
                     checkForCollision(this.horizon.obstacles[0], this.tRex);
-
+                // 수정
                 if (!collision) {
                     this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
 
@@ -1212,8 +1209,7 @@
     function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         // 변수는 장애물, 공룡, canvas 옵션
         var obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
-        if(tRex.attacking) return false;
-
+        
         // Adjustments are made to the bounding box as there is a 1 pixel white
         // border around the t-rex and obstacles.
         var tRexBox = new CollisionBox( // 공룡 범위
@@ -1227,15 +1223,23 @@
             obstacle.yPos + 1,
             obstacle.typeConfig.width * obstacle.size - 2,
             obstacle.typeConfig.height - 2);
-
+       
         // Debug outer box
         if (opt_canvasCtx) {
             drawCollisionBoxes(opt_canvasCtx, tRexBox, obstacleBox);
             // drawCollisionBoxes 역할은 다시 알아봐야함
         }
-    
+        // 익룡을 공격하면 점수가 올라간다.
+        // 수정
+        if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
+            // if(obstacle.typeConfig.type == 'PTERODACTYL'){
+                obstacle.remove = true;
+                console.log("제거 완료");
+            // }
+            
+            return false;
+        }
         // Simple outer bounds check.
-        // 
         if (boxCompare(tRexBox, obstacleBox)) { // 공룡의 박스와 장애물 박스 비교
             var collisionBoxes = obstacle.collisionBoxes; //  장애물의 충돌 범위
             var tRexCollisionBoxes = tRex.ducking||tRex.attacking ? // 공룡의 충돌 범위
@@ -1265,7 +1269,6 @@
         }
         return false;
     };
-
 
     /**
      * Adjust the collision box.
@@ -1623,7 +1626,27 @@
             type: 'PTERODACTYL',
             width: 46,
             height: 40,
-            yPos: [100, 75, 50], // Variable height. // 위치는 계속 변경 됨
+            yPos: [100], // Variable height. // 위치는 계속 변경 됨
+            yPosMobile: [100, 50], // Variable height mobile. // 핸드폰의 Y축
+            multipleSpeed: 999,
+            minSpeed: 8.5,
+            minGap: 150,
+            collisionBoxes: [
+                new CollisionBox(15, 15, 16, 5),
+                new CollisionBox(18, 21, 24, 6),
+                new CollisionBox(2, 14, 4, 3),
+                new CollisionBox(6, 10, 4, 7),
+                new CollisionBox(10, 8, 6, 9)
+            ],
+            numFrames: 2,
+            frameRate: 1000 / 6,
+            speedOffset: .8
+        },
+        {   //익룡
+            type: 'PTERODACTYL',
+            width: 46,
+            height: 40,
+            yPos: [100, 75, 50, 100, 100], // Variable height. // 위치는 계속 변경 됨
             yPosMobile: [100, 50], // Variable height mobile. // 핸드폰의 Y축
             multipleSpeed: 999,
             minSpeed: 8.5,
@@ -2182,7 +2205,7 @@
         FLASH_ITERATIONS: 3
     };
 
-
+    // 거리 계산
     DistanceMeter.prototype = {
         /**
          * Initialise the distance meter to '00000'.
@@ -2208,9 +2231,8 @@
          */
         calcXPos: function (canvasWidth) {
             this.x = canvasWidth - (DistanceMeter.dimensions.DEST_WIDTH *
-                (this.maxScoreUnits + 1));
+                (this.maxScoreUnits + 10));
         },
-
         /**
          * Draw a digit to canvas.
          * @param {number} digitPos Position of the digit.
@@ -2264,10 +2286,10 @@
          * @param {number} distance Pixel distance ran.
          * @return {number} The 'real' distance ran.
          */
+        // 실제 이동 거리를 구해준다.
         getActualDistance: function (distance) {
             return distance ? Math.round(distance * this.config.COEFFICIENT) : 0;
         },
-
         /**
          * Update the distance meter.
          * @param {number} distance
@@ -2277,7 +2299,7 @@
         update: function (deltaTime, distance) {
             var paint = true;
             var playSound = false;
-
+            
             if (!this.acheivement) {
                 distance = this.getActualDistance(distance);
                 // Score has gone beyond the initial digit count.
