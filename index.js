@@ -11,7 +11,11 @@
      * @constructor
      * @export
      */
-
+    function sing(){
+        console.log();
+    }
+    var flag = false;
+    var score = 0;
     // 공룡 달리기 객체
     function Runner(outerContainerId, opt_config) {
         // Singleton
@@ -385,7 +389,7 @@
 
             this.adjustDimensions();// 차원 조절
             this.setSpeed(); // 속도 설정
-
+            
             this.containerEl = document.createElement('div');
             this.containerEl.className = Runner.classes.CONTAINER;
 
@@ -616,8 +620,11 @@
                     checkForCollision(this.horizon.obstacles[0], this.tRex);
                 // 수정
                 if (!collision) {
-                    this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
-
+                    this.distanceRan += (this.currentSpeed * deltaTime / this.msPerFrame);
+                    if(flag){
+                        this.distanceRan += 1750;
+                        flag = false;
+                    }
                     if (this.currentSpeed < this.config.MAX_SPEED) {
                         this.currentSpeed += this.config.ACCELERATION;
                     }
@@ -1232,11 +1239,12 @@
         // 익룡을 공격하면 점수가 올라간다.
         // 수정
         if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
-            // if(obstacle.typeConfig.type == 'PTERODACTYL'){
+            if(obstacle.typeConfig.type == 'PTERODACTYL'){
                 obstacle.remove = true;
-                console.log("제거 완료");
-            // }
-            
+                if(!flag){
+                    flag = true;
+                }
+            }     
             return false;
         }
         // Simple outer bounds check.
@@ -1822,6 +1830,7 @@
                 Runner.config.BOTTOM_PAD;
             // 현재 위치를 아까 구한 땅의 위치롷
             this.yPos = this.groundYPos;
+            score = 0;
             // 최소한의 점프 높이를 구하여 넣어줌
             this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
             this.minattackdistance = this.xPos + this.config.MIN_ATTACK_DISTANCE;
@@ -2193,7 +2202,7 @@
 
         // Distance that causes achievement animation.
         // 이 점수마다 깜빡 거린다.
-        ACHIEVEMENT_DISTANCE: 100,
+        ACHIEVEMENT_DISTANCE: 300,
 
         // Used for conversion from pixel distance to a scaled unit.
         COEFFICIENT: 0.025,
@@ -2302,6 +2311,7 @@
             
             if (!this.acheivement) {
                 distance = this.getActualDistance(distance);
+                
                 // Score has gone beyond the initial digit count.
                 if (distance > this.maxScore && this.maxScoreUnits ==
                     this.config.MAX_DISTANCE_UNITS) {
@@ -2310,7 +2320,7 @@
                 } else {
                     this.distance = 0;
                 }
-
+                
                 if (distance > 0) {
                     // Acheivement unlocked
                     if (distance % this.config.ACHIEVEMENT_DISTANCE == 0) {
@@ -2319,10 +2329,10 @@
                         this.flashTimer = 0;
                         playSound = true;
                     }
-
                     // Create a string representation of the distance with leading 0.
                     var distanceStr = (this.defaultString +
                         distance).substr(-this.maxScoreUnits);
+                    
                     this.digits = distanceStr.split('');
                 } else {
                     this.digits = this.defaultString.split('');
