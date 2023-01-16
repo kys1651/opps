@@ -15,6 +15,8 @@
     var booster = false;
     var Attackcount = 1;
     var beforeSpeed = 0;
+    var hard = false;
+
     // 공룡 달리기 객체
     function Runner(outerContainerId, opt_config) {
         // Singleton
@@ -127,7 +129,7 @@
         GAP_COEFFICIENT: 0.6,
         GRAVITY: 0.6,//중력
         INITIAL_JUMP_VELOCITY: 12,
-        attackVelocity: 5,
+        attackVelocity: 5, // 공격 속도
         INVERT_FADE_DURATION: 12000,
         INVERT_DISTANCE: 700,
         MAX_BLINK_COUNT: 3,
@@ -136,8 +138,8 @@
         MAX_OBSTACLE_DUPLICATION: 2,
         MAX_SPEED: 13,
         MIN_JUMP_HEIGHT: 35,
-        MIN_ATTACK_DISTANCE: 20,
-        MAX_ATTACK_DISTANCE: 35,
+        MIN_ATTACK_DISTANCE: 20, // 최소 공격 거리
+        MAX_ATTACK_DISTANCE: 35, // 최대 공격 거리
         MOBILE_SPEED_COEFFICIENT: 1.2,
         RESOURCE_TEMPLATE_ID: 'audio-resources',
         SPEED: 6,
@@ -227,7 +229,7 @@
         JUMP: { '38': 1, '32': 1 },  // Up, spacebar
         DUCK: { '40': 1 },  // Down
         RESTART: { '13': 1 },  // Enter
-        ATTACK: { '65': 1}, // A: 공격하기 위한 버튼 생성
+        ATTACK: { '65': 1}, // A: 공격하기 위한 버튼 생성 
     };
 
 
@@ -250,7 +252,7 @@
         BLUR: 'blur',
         FOCUS: 'focus',
         LOAD: 'load',
-        ATTACK: 'attack'
+        ATTACK: 'attack'//공격 이벤트
     };
 
 
@@ -525,9 +527,6 @@
                 this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
                 this.containerEl.style.width = this.dimensions.WIDTH + 'px';
 
-                // if (this.touchController) {
-                //     this.outerContainerEl.appendChild(this.touchController);
-                // }
                 this.playing = true;
                 this.activated = true;
             } else if (this.crashed) {
@@ -583,13 +582,14 @@
             if (this.playing) {
                 this.clearCanvas();
                 // 컨버스를 전부 지움
-
+                const target = document.getElementById('btn-modal');
+                target.disabled = true;
                 // tRex가 점프시 updateJump 함수 서용
                 if (this.tRex.jumping) {
                     this.tRex.updateJump(deltaTime);
                     // 점프하는 함수 사용
                 }
-                if(this.tRex.attacking){
+                if(this.tRex.attacking){ // 공격 중일 때
                     this.tRex.updateattack(deltaTime);
                 }
 
@@ -633,7 +633,7 @@
                             beforeSpeed = this.currentSpeed;
                             this.currentSpeed += 7;
                         } 
-                        Attackcount -= 1;
+                        Attackcount -= 1; // 공격하는 횟수
                         if(Attackcount < 10){
                             booster = false;
                             Attackcount = 1;
@@ -771,7 +771,7 @@
 
                 if(!this.crashed && (Runner.keycodes.ATTACK[e.keyCode])&&this.playing){
                     if(!this.tRex.attacking && !this.tRex.ducking && !this.tRex.jumping && !booster){
-                        this.tRex.startattack(this.currentSpeed);
+                        this.tRex.startattack(this.currentSpeed); // 공격을 시작하는 기준
                     }
                 }
 
@@ -806,7 +806,7 @@
                 e.type == Runner.events.TOUCHEND ||
                 e.type == Runner.events.MOUSEDOWN;
 
-            var attack = Runner.keycodes.ATTACK[keyCode];
+            var attack = Runner.keycodes.ATTACK[keyCode]; // 공격 키 값
             
             if (this.isRunning() && isjumpKey) {
                 this.tRex.endJump();
@@ -896,6 +896,10 @@
 
         stop: function () {
             this.playing = false;
+            if(!this.playing){
+                const target = document.getElementById('btn-modal');
+                target.disabled = false;
+            }
             this.paused = true;
             cancelAnimationFrame(this.raqId);
             this.raqId = 0;
@@ -928,7 +932,7 @@
                 this.playSound(this.soundFx.BUTTON_PRESS);
                 this.invert(true);
                 this.update();
-                Attackcount = 1;
+                Attackcount = 1; // 공격 횟수 초기화
             }
         },
         
@@ -1230,7 +1234,7 @@
     function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         // 변수는 장애물, 공룡, canvas 옵션
         var obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
-        if(booster) return false;
+        // if(booster) return false;
         // Adjustments are made to the bounding box as there is a 1 pixel white
         // border around the t-rex and obstacles.
         var tRexBox = new CollisionBox( // 공룡 범위
@@ -1253,7 +1257,7 @@
         // 장애물 공격시 익룡: 점수 50점 획득
         // 선인장: 5개 섭취시 속도가 빨라짐
         if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
-            // 익룡 먹
+            // 익룡 먹을 시 50점 추가 선인장 섭취시 공격시간 증가
             if(obstacle.typeConfig.type == 'PTERODACTYL'){
                 if(!flag){
                     flag = true;
@@ -1744,10 +1748,10 @@
         // 점프 하고 있는지, 숙이는 중인지, 점프 속도 등
         this.jumping = false;
         this.ducking = false;
-        this.attacking = false;
+        this.attacking = false; //공격하는지 확인하는 플래그 변수
         this.jumpVelocity = 100;
         
-        this.attackVelocity = 5;
+        this.attackVelocity = 10; //공격 속도
         this.reachedMinHeight = false;
         this.reachedMindistance =false;
         this.speedDrop = false;
@@ -1770,7 +1774,7 @@
         HEIGHT: 47,
         HEIGHT_DUCK: 25,
         INIITAL_JUMP_VELOCITY: -10,
-        attackVelocity: 5,
+        attackVelocity: 10,
         INTRO_DURATION: 1500,
         MAX_JUMP_HEIGHT: 30,
         MIN_JUMP_HEIGHT: 30,
@@ -2049,7 +2053,6 @@
                 this.update(0, Trex.status.ATTACKING);
                 // 공격 상태로 업데이트 한다.
 
-                // this.attackVelocity = this.config.attackVelocity - (speed/10);
                 // 공격 상태 true
                 this.attacking = true;   
 
@@ -2327,6 +2330,37 @@
             this.canvasCtx.restore();
         },
 
+        // attackdraw(1,attackcoubnt)
+        attackdraw: function (digitPos, value) {
+            var sourceWidth = DistanceMeter.dimensions.WIDTH;
+            var sourceHeight = DistanceMeter.dimensions.HEIGHT;
+            var sourceX = DistanceMeter.dimensions.WIDTH * value;
+            var sourceY = 0;
+
+            var targetX = digitPos * DistanceMeter.dimensions.DEST_WIDTH;
+            var targetY = this.y;
+            var targetWidth = DistanceMeter.dimensions.WIDTH;
+            var targetHeight = DistanceMeter.dimensions.HEIGHT;
+
+            // For high DPI we 2x source values.
+            if (IS_HIDPI) {
+                sourceWidth *= 2;
+                sourceHeight *= 2;
+                sourceX *= 2;
+            }
+
+            sourceX += this.spritePos.x;
+            // sourceY += this.spritePos.y;
+
+            this.canvasCtx.save();
+            this.canvasCtx.drawImage(this.image, sourceX, sourceY,
+                sourceWidth, sourceHeight,
+                targetX, targetY,
+                targetWidth, targetHeight
+            );
+
+            this.canvasCtx.restore();
+        },
         /**
          * Covert pixel distance to a 'real' distance.
          * @param {number} distance Pixel distance ran.
@@ -2399,6 +2433,10 @@
                     this.draw(i, parseInt(this.digits[i]));
                 }
             }
+
+            
+            var tmp = parseInt(Attackcount / 100); // 값은 2
+            this.attackdraw(0,Attackcount/100);
 
             this.drawHighScore();
             return playSound;
@@ -3048,15 +3086,11 @@
 })();
 
 
+
 // 처음 페이지가 불렸을 때 러너 객체 생성
 function onDocumentLoad() {
     new Runner('.interstitial-wrapper');
 }
 
-document.addEventListener('DOMContentLoaded', onDocumentLoad);
 
-/*
-1. 선인장 5번 먹으면 부스터 기능
-2. 익룡은 먹으면 50점 추가점수
-3. 왼쪽위에 몇개 먹었는지 알려주는 기능 추가 예정
-*/
+document.addEventListener('DOMContentLoaded', onDocumentLoad);

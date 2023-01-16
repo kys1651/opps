@@ -8,9 +8,106 @@
     <link rel="stylesheet" href="index.css"> <!-- html 에서 css 선언함-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet"> 
     <script src="index.js"></script>
+
+    <style>
+        /* 설명서 */
+        #modal.modal-overlay {
+            width: 100%;
+            height: 30%;
+            position: fixed;
+            left: 0;
+            top: 20%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(1.5px);
+            -webkit-backdrop-filter: blur(1.5px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        #modal .modal-window {
+            background: rgba( 69, 139, 197, 0.70 );
+            box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+            backdrop-filter: blur( 13.5px );
+            -webkit-backdrop-filter: blur( 13.5px );
+            border-radius: 10px;
+            border: 1px solid rgba( 255, 255, 255, 0.18 );
+            width: 400px;
+            height: 500px;
+            position: relative;
+            top: -75px;
+            padding: 10px;
+        }
+        #modal .title {
+            padding-left: 10px;
+            display: inline;
+            text-shadow: 1px 1px 2px gray;
+            color: white;
+            
+        }
+        #modal .title h2 {
+            display: inline;
+        }
+        #modal .close-area {
+            display: inline;
+            float: right;
+            padding-right: 10px;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px gray;
+            color: white;
+        }
+        #modal .content {
+            margin-top: 20px;
+            padding: 0px 10px;
+            text-shadow: 1px 1px 2px gray;
+            color: white;
+        }
+
+        /* 난이도 설정 */
+        .bar {
+            float: left;
+        }
+        #btn-model{
+            float:left;
+        }
+   </style>
 </head>
 
 <body id="t" class="offline">
+    
+    <span class="bar">
+        <div id="container">
+            <button id="btn-modal" class="myButton">설명서</button>
+        </div>
+        <div id="modal" class="modal-overlay">
+            <div class="modal-window">
+                <div class="title">
+                    <h2>게임 설명서</h2>
+                </div>
+                <div class="close-area">X</div>
+                <div class="content">
+                    <p>A 버튼 : 공룡이 앞으로 돌진하여 장애물을 잡아 먹습니다.</p>
+                    <p>선인장: 5번 섭취시 공룡이 돌진합니다.(왼쪽 위의 횟수 표기)</p>
+                    <p>익룡: 섭취시 추가 점수 50점을 획득합니다.</p>
+                    <p>노멀 모드: 돌진시 장애물에 닿아도 무적 상태가 됩니다.</p>
+                    <p>하드 모드: 돌진시 장애물에 닿으면 공룡이 죽습니다.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 토글 -->
+        <div class="toggle_box">
+            <input type="checkbox" id="custom_input"></input>
+            <label for="custom_input" class="toggle_btn_label">
+            <span></span>
+            </label>
+        </div>
+        
+    </span>
+
     <div id="messageBox" class="sendmessage"> <!-- 처음에 메시지 출력하기 -->
          <h1 style="text-align: center;font-family: 'Open Sans', sans-serif;">스페이스바를 눌러 시작하기</h1>
          <div class="niokbutton" onclick="okbuttonsend()"></div>
@@ -36,14 +133,42 @@
     공격(a 키 코드) : 65     -->
 
 <script>
+    const modal = document.getElementById("modal");
+    const button = document.getElementById('btn-modal'); 
+    
     document.onkeydown = function(evt) {
-    evt = evt || window.event;
-    if (evt.keyCode == 32) { 
-        var box = document.getElementById("messageBox");
-        box.style.visibility="hidden";
-    }else if(evt.keyCode == 65) {        
+        evt = evt || window.event;
+
+        if (evt.keyCode == 32) { 
+            var box = document.getElementById("messageBox");
+            box.style.visibility="hidden";
+            modal.style.display = "none";
+        }
+    };
+
+// 여기서부터 모달창 다루기
+// 설명서
+const btnModal = document.getElementById("btn-modal")
+btnModal.addEventListener("click", e => {
+    modal.style.display = "flex";
+    button.disabled = true;
+})
+
+const closeBtn = modal.querySelector(".close-area")
+closeBtn.addEventListener("click", e => {
+    modal.style.display = "none"
+    button.disabled = false;
+})
+
+modal.addEventListener("click", e => {
+    const evTarget = e.target
+    if(evTarget.classList.contains("modal-overlay")) {
+        modal.style.display = "none"
+        button.disabled = false;
     }
-};
+})
+
+
 </script>
     
 </html>
