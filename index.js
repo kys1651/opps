@@ -584,7 +584,7 @@
                 // 컨버스를 전부 지움
                 const btn = document.getElementById('btn-modal');
                 btn.style.display = 'none';
-                
+
                 const toggle = document.getElementById('custom_input');
                 hard = toggle.checked
                 toggle.disabled = true;
@@ -631,6 +631,7 @@
                     }
                     if (this.currentSpeed < this.config.MAX_SPEED) {
                         this.currentSpeed += this.config.ACCELERATION;
+                        if(hard) this.currentSpeed += 0.01;
                     }
                     // 부스터 기능 구현
                     if(booster){
