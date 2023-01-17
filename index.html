@@ -80,18 +80,44 @@
         .toggle_box{
             float: right;
         }
+        .bar {
+            float: left;
+        }
    </style>
 </head>
 
 <body id="t" class="offline">
-        <!-- 토글 -->
-        <span class="toggle_box">
-            <input type="checkbox" id="custom_input"></input>
-            <label for="custom_input" class="toggle_btn_label">
-            <span></span>
-            </label>
-        </span>
-
+        <div class="bar">
+            <span id="container">
+                <button id="btn-modal" class="myButton">설명서</button>
+            </span>
+            
+            <div id="modal" class="modal-overlay">
+                <div class="modal-window">
+                    <div class="title">
+                        <h2>게임 설명서</h2>
+                    </div>
+                    <div class="close-area">X</div>
+                    <div class="content">
+                        <p>A 버튼 : 공룡이 앞으로 돌진하여 장애물을 잡아 먹습니다.</p>
+                        <p>선인장: 5번 섭취시 공룡이 돌진합니다.(왼쪽 위의 횟수 표기)</p>
+                        <p>익룡: 섭취시 추가 점수 50점을 획득합니다.</p>
+                        <p>노멀 모드: 돌진시 장애물에 닿아도 무적 상태가 됩니다.</p>
+                        <p>하드 모드: 돌진시 장애물에 닿으면 공룡이 죽습니다.</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div> 
+                <!-- 토글 -->
+                <span class="toggle_box">
+                    <input type="checkbox" id="custom_input"></input>
+                    <label for="custom_input" class="toggle_btn_label">
+                    <span></span>
+                    </label>
+                </span>
+        
     <div id="messageBox" class="sendmessage"> <!-- 처음에 메시지 출력하기 -->
          <h1 style="text-align: center;font-family: 'Open Sans', sans-serif;">스페이스바를 눌러 시작하기</h1>
          <div class="niokbutton" onclick="okbuttonsend()"></div>
@@ -110,30 +136,7 @@
             </template>
         </div>
     </div>
-
-    <div class="bar">
-        <span id="container">
-            <button id="btn-modal" class="myButton">설명서</button>
-        </span>
-        
-        <div id="modal" class="modal-overlay">
-            <div class="modal-window">
-                <div class="title">
-                    <h2>게임 설명서</h2>
-                </div>
-                <div class="close-area">X</div>
-                <div class="content">
-                    <p>A 버튼 : 공룡이 앞으로 돌진하여 장애물을 잡아 먹습니다.</p>
-                    <p>선인장: 5번 섭취시 공룡이 돌진합니다.(왼쪽 위의 횟수 표기)</p>
-                    <p>익룡: 섭취시 추가 점수 50점을 획득합니다.</p>
-                    <p>노멀 모드: 돌진시 장애물에 닿아도 무적 상태가 됩니다.</p>
-                    <p>하드 모드: 돌진시 장애물에 닿으면 공룡이 죽습니다.</p>
-                </div>
-            </div>
-        </div>
-        
-        
-    </div>
+    
 </body>
 
 <!--키보드 누를때 이벤트 메시지 박스가 사라짐

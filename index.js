@@ -582,9 +582,9 @@
             if (this.playing) {
                 this.clearCanvas();
                 // 컨버스를 전부 지움
-                const target = document.getElementById('btn-modal');
-                target.disabled = true;
-
+                const btn = document.getElementById('btn-modal');
+                btn.style.display = 'none';
+                
                 const toggle = document.getElementById('custom_input');
                 hard = toggle.checked
                 toggle.disabled = true;
@@ -902,8 +902,9 @@
         stop: function () {
             this.playing = false;
             if(!this.playing){
-                const target = document.getElementById('btn-modal');
-                target.disabled = false;
+                const btn = document.getElementById('btn-modal');
+                btn.style.display = 'inline-block';
+
                 const toggle = document.getElementById('custom_input');
                 toggle.disabled = false;
             }
