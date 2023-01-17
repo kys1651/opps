@@ -626,7 +626,16 @@
                 if (!collision) {
                     this.distanceRan += (this.currentSpeed * deltaTime / this.msPerFrame);
                     if(flag){
-                        this.distanceRan += 1750;
+                        if(!hard) {
+                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
+                            this.distanceRan += 875;
+                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
+                        }
+                        else {
+                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
+                            this.distanceRan += 40000;
+                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
+                        }
                         flag = false;
                     }
                     if (this.currentSpeed < this.config.MAX_SPEED) {
@@ -1266,14 +1275,17 @@
         // 장애물 공격시 익룡: 점수 50점 획득
         // 선인장: 5개 섭취시 속도가 빨라짐
         if(booster&&!hard){
-            if (boxCompare(tRexBox, obstacleBox))
+            if (boxCompare(tRexBox, obstacleBox)){
                 obstacle.remove = true; 
+                if(!flag) flag = true;
+            }
             return false;
         }
         if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
             
-            // 익룡 먹을 시 50점 추가 선인장 섭취시 공격시간 증가
-            if(obstacle.typeConfig.type == 'PTERODACTYL'){
+            // 하드모드에서 익룡 먹을 시 100점 추가 
+            // 모든 모드에서 선인장 섭취시 공격시간 증가
+            if(obstacle.typeConfig.type == 'PTERODACTYL' && hard){
                 if(!flag){
                     flag = true;
                 }
