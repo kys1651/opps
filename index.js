@@ -584,6 +584,11 @@
                 // 컨버스를 전부 지움
                 const target = document.getElementById('btn-modal');
                 target.disabled = true;
+
+                const toggle = document.getElementById('custom_input');
+                hard = toggle.checked
+                toggle.disabled = true;
+                
                 // tRex가 점프시 updateJump 함수 서용
                 if (this.tRex.jumping) {
                     this.tRex.updateJump(deltaTime);
@@ -899,6 +904,8 @@
             if(!this.playing){
                 const target = document.getElementById('btn-modal');
                 target.disabled = false;
+                const toggle = document.getElementById('custom_input');
+                toggle.disabled = false;
             }
             this.paused = true;
             cancelAnimationFrame(this.raqId);
@@ -1234,7 +1241,7 @@
     function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         // 변수는 장애물, 공룡, canvas 옵션
         var obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
-        // if(booster) return false;
+        
         // Adjustments are made to the bounding box as there is a 1 pixel white
         // border around the t-rex and obstacles.
         var tRexBox = new CollisionBox( // 공룡 범위
@@ -1256,7 +1263,13 @@
         }
         // 장애물 공격시 익룡: 점수 50점 획득
         // 선인장: 5개 섭취시 속도가 빨라짐
+        if(booster&&!hard){
+            if (boxCompare(tRexBox, obstacleBox))
+                obstacle.remove = true; 
+            return false;
+        }
         if (boxCompare(tRexBox, obstacleBox)&&tRex.attacking) { // 공룡의 박스와 장애물 박스 비교
+            
             // 익룡 먹을 시 50점 추가 선인장 섭취시 공격시간 증가
             if(obstacle.typeConfig.type == 'PTERODACTYL'){
                 if(!flag){
@@ -2622,6 +2635,7 @@
          */
         update: function (activated, delta) {
             // Moon phase.
+            if(hard) activated = true;
             if (activated && this.opacity == 0) {
                 this.currentPhase++;
 
