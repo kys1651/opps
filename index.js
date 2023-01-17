@@ -627,14 +627,10 @@
                     this.distanceRan += (this.currentSpeed * deltaTime / this.msPerFrame);
                     if(flag){
                         if(!hard) {
-                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
                             this.distanceRan += 875;
-                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
                         }
                         else {
-                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
                             this.distanceRan += 40000;
-                            console.log(this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan)));
                         }
                         flag = false;
                     }
